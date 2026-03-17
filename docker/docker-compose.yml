@@ -1,0 +1,30 @@
+services:
+  qwen-tts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: qwen3-tts:latest
+    container_name: qwen3-tts
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - HF_HOME=/workspace/models
+    volumes:
+      # Project source (editable install)
+      - ..:/workspace
+      # Pre-downloaded models
+      - ../models:/workspace/models
+      # Fine-tuning output
+      - ../output:/workspace/output
+    working_dir: /workspace/finetuning
+    shm_size: "16gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+
